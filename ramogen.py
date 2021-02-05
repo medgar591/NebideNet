@@ -36,4 +36,4 @@ def genSLR(ilow, ihigh, dlow, dhigh, models, fileName):
 
     result.close()
 
-genSLR(0,2,0,2,5,"slrmodels.csv")
+genSLR(2,5,0,1,1000,"slrmodels.csv")
