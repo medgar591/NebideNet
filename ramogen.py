@@ -1,7 +1,7 @@
 # RaMoGen
 # Random Model Generator
 # By Matt Edgar
-# Verson 0.3
+# Verson 0.4
 
 import numpy
 
@@ -65,28 +65,28 @@ def testSLR(modelFile, dataFile, ignore: list, sensitive):
     
 
     #Scoring models
+    lendata = len(data)
     for b in range(len(models)):
-        score = [0.0]*len(data)
-        for x in range(len(data)):
-            score[x] = models[b][0]
-            for n in range(len(data[x])):
-                score[x] += models[b][n+1] * data[x][n]
+        score = [0.0]*lendata
+        for x in range(lendata):
+            score[x] = sum(
+                [models[b][n+1] * data[x][n] for n in range(len(data[x]))],
+                models[b][0])
             score[x] = max(0.0, min(score[x], 1.0)) # Effectively clamps results to a 0 to 1 scale
+        
         #Calculating Statistical Parity
-        st = 0.0 #Number of cases where Sensitive is True
-        sf = 0.0 #Number of cases where Sensitive is False
+        st = sa.count(True) #Number of cases where Sensitive is True
+        sf = len(sa) - st #Number of cases where Sensitive is False
         stt = 0.0 #Number of cases where Sensitive is True and score is True
         sft = 0.0 #Number of cases where Sensitive is False and score is True
 
         for n in range(len(sa)):
-            if sa[n]:
-                st += 1.0
-                if score[n] >= 0.5:
-                    stt += 1.0
-            else:
-                sf += 1.0
-                if score[n] >= 0.5:
-                    sft += 1.0
+            if score[n] >= 0.5:
+                if sa[n]:
+                    stt += 1
+                else:
+                    sft += 1
+
         parity = (stt/st) - (sft/sf) #Parity = P(score+ | sensitive+) - P(score+ | sensitive-)
         models[b].append(parity)
     
