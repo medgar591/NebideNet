@@ -30,4 +30,4 @@ def genSLR(attributes, models, fileName, gauss=True):
     result.writelines(text)
     result.close()
 
-genSLR(4,3,"none")
+genSLR(99,1000,"slrmodels.csv")
