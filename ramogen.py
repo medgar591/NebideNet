@@ -1,39 +1,33 @@
 # RaMoGen
 # Random Model Generator
 # By Matt Edgar
-# Verson 0.1
+# Verson 0.2
 
-import random
+import numpy
 
-# Generates a number of Simple-Linear-Regression models based on inputs values
-# Input values should be tuned to closely capture potential data ranges, as the slope will not be higher/lower than their ranges
-# ihigh and ilow are used to generate a range of independent variable values
-# dhigh and dlow are used similarly for the dependent variable
-# models stands for how many models should be generated
-# fileName points toward an existing file to be overwritten or nothing if a new file is to be made
-def genSLR(ilow, ihigh, dlow, dhigh, models, fileName):
-
+# Generates a number of Simple Linear Regression models
+# Attributes determines the number of coefficients of the models
+# Models determines the number of models to generate
+# fileName is where the models will be written - overwrites previous files
+# gauss is a boolean to determine if Gaussian Normal Distribution (true) or Uniform (false) is used
+def genSLR(attributes, models, fileName, gauss=True):
     text = [""]*models
 
-    drange = dhigh-dlow
-    irange = ihigh-ilow
+    if gauss:
+        for model in range(models):
+            temp = numpy.random.normal(0,1,attributes)
 
-    for model in range(len(text)):
-        slope = drange/irange
-        b1 = random.uniform(-slope, slope)
-        
-        # Given the slope b1, shift the line vertically so that the intercept is between either the low corner or the high corner
-        if b1 >= 0:
-            b0 = random.uniform(dlow-b1*ilow, dhigh-b1*ihigh)
-        else:
-            b0 = random.uniform(dhigh-b1*ilow, dlow-b1*ihigh)
+            text[model] = ",".join(map(str,temp.tolist()))
+            text[model] += "\n"
+    else: # Note: numpy.random.uniform is exclusive of the highest value, which slightly shifts results
+        for model in range(models):
+            temp = numpy.random.uniform(-1,1,attributes)
 
-        text[model] = str(b0) + "," + str(b1) + "\n"
-
-    result = open(fileName, "wt")
+            text[model] = ",".join(map(str,temp.tolist()))
+            text[model] += "\n"
     
+    result = open(fileName, "wt")
     result.writelines(text)
-
     result.close()
 
-genSLR(2,5,0,1,1000,"slrmodels.csv")
+genSLR(4,3,"none")
