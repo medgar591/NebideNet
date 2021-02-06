@@ -8,3 +8,11 @@ For testing purposes, we are making use of the Communities and Crime Dataset fro
 ## RaMoGen
 
 Random Model Generator is a supplemental program used to create random models for training and testing purposes.
+
+## Other resources being used for Reference:
+
+https://arxiv.org/pdf/2001.07864.pdf
+
+80% rule for discrimination
+
+Mean Squared Error for calculating network accuracy
