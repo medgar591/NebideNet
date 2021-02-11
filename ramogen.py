@@ -87,7 +87,17 @@ def testSLR(modelFile, dataFile, ignore: list, sensitive):
                 else:
                     sft += 1
 
-        parity = (stt/st) / (sft/sf) #Parity ratio = P(score+ | sensitive+) / P(score+ | sensitive-)
+        """
+        parity = 0
+        if (sft == 0):
+            if (stt == 0):
+                parity = 1
+            else:
+                parity = 2 # TODO: Find the appropriate weight for accepting sensitive while ignoring non-sensitive
+        else: # TODO: Consider the problem of a extremely small acceptance rate that achieved 0 for minorities
+            parity = (stt/st) / (sft/sf) #Parity ratio = P(score+ | sensitive+) / P(score+ | sensitive-)
+        """
+        parity = (stt/st) - (sft/sf)
         models[b].append(parity)
     
     #Writing models + their parity scores back to the file
