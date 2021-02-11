@@ -52,23 +52,25 @@ tempLinearBiases = [row.pop(len(row)-1) for row in tempLinearNets]
 linearNets = torch.tensor(tempLinearNets, dtype=torch.float)
 linearBiases = torch.tensor(tempLinearBiases, dtype=torch.float)
 
+
 #Training loop
 print("Beginning Training")
-for epoch in range(10):
+for epoch in range(1):
     running_loss = 0.0
     for n in range (len(linearNets)):
         net.zero_grad()
         output = net(linearNets[n])
-        loss = criterion(output, linearBiases[n])
+        loss = criterion(output, torch.tensor([linearBiases[n]])) # TODO: find out why just doing linearBiases[n] suddenly broke
         loss.backward()
         for f in net.parameters():
             f.data.sub_(f.grad.data * learning_rate)
         
         running_loss += loss.item()
-        if n % 100 == 99:    # print every 100 mini-batches
+        if n % 10 == 9:    # print every 100 mini-batches
             print('[%d, %5d] loss: %.3f' %
-                  (epoch + 1, n + 1, running_loss / 100))
+                  (epoch + 1, n + 1, running_loss / 10))
             running_loss = 0.0
+
 print('Finished Training')
 
 # Reading in testing file
@@ -82,7 +84,7 @@ linearNets = torch.tensor(tempLinearNets, dtype=torch.float)
 linearBiases = torch.tensor(tempLinearBiases, dtype=torch.float)
 
 # Testing loop
-tolerance = 0.005
+tolerance = 0.01
 correct = 0
 total = 0
 with torch.no_grad():
@@ -92,4 +94,4 @@ with torch.no_grad():
         if abs(linearBiases[n]-output) <= tolerance:
             correct += 1
 
-print("Accuracy of the network on 1,000 test models: %d %%" % (correct/total*100))
+print("Accuracy of the network on 1,000 test models: %f %%" % (100.0*correct/total))
