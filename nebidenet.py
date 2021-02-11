@@ -6,17 +6,24 @@ import ramogen
 # Parameters
 learning_rate = 0.004 #ideal value seems to lie in [0.003, 0.01]
 repetitions = 5 #Hits diminishing returns after 4
-criterion = nn.MSELoss()
+criterion = nn.MSELoss() #Changing to sum reduction decreases accuracy, but then relu layers become positive, net ~5% hit though
 trainingFile = "slrmodels.csv"
 testingFile = "slrTestModels.csv"
 createNewTrainingModels = False
 createNewTestingModels = False
+batch = 5 #Ideal value seems to lie be 4 or 5
 
 # Basic set of linear layers in sequence for the net
+# Adding relu layers is a decent hit to accuracy (~7%)
+# Adding droput layer after ll2 improves accuracy (~5%), with ideal p values in (4, 9), with an ideal value ~7
+# Starting with a softmax/min layer improves accurace (~1%) as long as no dimension is specified (which is deprecated), else it drops
+t = [80, 70, 20]
 net = nn.Sequential(
-    nn.Linear(100,50),
-    nn.Linear(50, 50),
-    nn.Linear(50, 1)
+    nn.Linear(100,t[0]),
+    nn.Linear(t[0], t[1]),
+    nn.Linear(t[1], t[2]),
+    nn.Dropout(0.8),
+    nn.Linear(t[2], 1)
 )
 
 # Create new nets for training and testing
@@ -58,10 +65,10 @@ print("Accuracy of the network on before training: %f %%" % (100.0*correct/total
 print("Beginning Training")
 for epoch in range(repetitions):
     running_loss = 0.0
-    for n in range (0, len(linearNets), 5):
-        output = net(linearNets[n:(n+5)])#.squeeze() # TODO: find out why squeezing this to remove the warning reduces accuracy by 1/3
+    for n in range (0, len(linearNets), batch):
+        output = net(linearNets[n:(n+batch)])#.squeeze() # TODO: find out why squeezing this to remove the warning reduces accuracy by 1/3
         net.zero_grad()
-        loss = criterion(output, linearBiases[n:(n+5)])
+        loss = criterion(output, linearBiases[n:(n+batch)])
         loss.backward()
         with torch.no_grad():
             for param in net.parameters():
@@ -70,9 +77,9 @@ for epoch in range(repetitions):
         #    f.data.sub_(f.grad.data * learning_rate)
         
         running_loss += loss.item()
-        if n % 1000 == 995:    # print every 1000 mini-batches
+        if n % 1000 == (1000-batch):    # print every 1000 mini-batches
             print('[%d, %5d] loss: %.3f' %
-                  (epoch + 1, n + 5, running_loss / 1000))
+                  (epoch + 1, n + batch, running_loss / 1000))
             running_loss = 0.0
 
 print('Finished Training')
