@@ -6,22 +6,22 @@
 import numpy
 
 # Generates a number of Simple Linear Regression models
-# Attributes determines the number of coefficients of the models
+# coefficients determines the number of coefficients of the models
 # Models determines the number of models to generate
 # fileName is where the models will be written - overwrites previous files
 # gauss is a boolean to determine if Gaussian Normal Distribution (true) or Uniform (false) is used
-def genSLR(attributes, models, fileName, gauss=True):
+def genSLR(coefficients, models, fileName, gauss=True):
     text = [""]*models
 
     if gauss:
         for model in range(models):
-            temp = numpy.random.normal(0,1,attributes)
+            temp = numpy.random.normal(0,1,coefficients)
 
             text[model] = ",".join(map(str,temp.tolist()))
             text[model] += "\n"
     else: # NOTE: numpy.random.uniform is exclusive of the highest value, which slightly shifts results
         for model in range(models):
-            temp = numpy.random.uniform(-1,1,attributes)
+            temp = numpy.random.uniform(-1,1,coefficients)
 
             text[model] = ",".join(map(str,temp.tolist()))
             text[model] += "\n"
@@ -87,7 +87,7 @@ def testSLR(modelFile, dataFile, ignore: list, sensitive):
                 else:
                     sft += 1
 
-        parity = (stt/st) - (sft/sf) #Parity = P(score+ | sensitive+) - P(score+ | sensitive-)
+        parity = (stt/st) / (sft/sf) #Parity ratio = P(score+ | sensitive+) / P(score+ | sensitive-)
         models[b].append(parity)
     
     #Writing models + their parity scores back to the file
@@ -99,4 +99,4 @@ def testSLR(modelFile, dataFile, ignore: list, sensitive):
     files.close()
 
 # genSLR(100,1000,"slrmodels.csv") #Generates 1,000 sample models to test on the communitycrime dataset
-testSLR("slrmodels.csv", "communitycrime/crimecommunity.csv", [100, 101], 0)
+# testSLR("slrmodels.csv", "communitycrime/crimecommunity.csv", [100, 101], 0)
