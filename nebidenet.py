@@ -12,6 +12,7 @@ testingFile = "slrTestModels.csv"
 createNewTrainingModels = False
 createNewTestingModels = False
 batch = 5 #Ideal value seems to lie be 4 or 5
+tolerance = 0.025
 
 # Basic set of linear layers in sequence for the net
 # Adding relu layers is a decent hit to accuracy (~7%)
@@ -49,7 +50,6 @@ tempLinearBiases = [row.pop(len(row)-1) for row in tempLinearNets]
 linearNets = torch.tensor(tempLinearNets, dtype=torch.float)
 linearBiases = torch.tensor(tempLinearBiases, dtype=torch.float)
 
-tolerance = 0.025
 correct = 0
 total = 0
 with torch.no_grad():
@@ -95,7 +95,6 @@ linearNets = torch.tensor(tempLinearNets, dtype=torch.float)
 linearBiases = torch.tensor(tempLinearBiases, dtype=torch.float)
 
 # Testing loop
-tolerance = 0.025
 correct = 0
 total = 0
 with torch.no_grad():
