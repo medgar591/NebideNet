@@ -4,7 +4,8 @@ import torch.nn.functional as F
 import ramogen
 
 # Parameters
-learning_rate = 0.002
+learning_rate = 0.004 #ideal value seems to lie in [0.003, 0.01]
+repetitions = 5 #Hits diminishing returns after 4
 criterion = nn.MSELoss()
 trainingFile = "slrmodels.csv"
 testingFile = "slrTestModels.csv"
@@ -41,8 +42,6 @@ tempLinearBiases = [row.pop(len(row)-1) for row in tempLinearNets]
 linearNets = torch.tensor(tempLinearNets, dtype=torch.float)
 linearBiases = torch.tensor(tempLinearBiases, dtype=torch.float)
 
-n = 0
-
 tolerance = 0.025
 correct = 0
 total = 0
@@ -57,7 +56,7 @@ print("Accuracy of the network on before training: %f %%" % (100.0*correct/total
 
 #Training loop
 print("Beginning Training")
-for epoch in range(5):
+for epoch in range(repetitions):
     running_loss = 0.0
     for n in range (0, len(linearNets), 5):
         output = net(linearNets[n:(n+5)])#.squeeze() # TODO: find out why squeezing this to remove the warning reduces accuracy by 1/3
@@ -71,9 +70,9 @@ for epoch in range(5):
         #    f.data.sub_(f.grad.data * learning_rate)
         
         running_loss += loss.item()
-        if n % 500 == 495:    # print every 500 mini-batches
+        if n % 1000 == 995:    # print every 1000 mini-batches
             print('[%d, %5d] loss: %.3f' %
-                  (epoch + 1, n + 5, running_loss / 500))
+                  (epoch + 1, n + 5, running_loss / 1000))
             running_loss = 0.0
 
 print('Finished Training')
