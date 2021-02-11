@@ -16,13 +16,15 @@ class Net(nn.Module):
     def __init__(self):
         super(Net, self).__init__()
         # TODO: Check to see if a better structure exists
-        self.l1 = nn.Linear(100, 50)
-        self.l2 = nn.Linear(50, 10)
-        self.l3 = nn.Linear(10, 1)
+        self.l1 = nn.Linear(100, 100)
+        self.l2 = nn.Linear(100, 50)
+        self.l3 = nn.Linear(50, 1)
+        self.dl = nn.Dropout()
     
     def forward(self, x):
         # TODO: Check here too
         x = F.relu(self.l1(x))
+        x = self.dl(x)
         x = F.relu(self.l2(x))
         x = self.l3(x)
         return x
@@ -52,10 +54,21 @@ tempLinearBiases = [row.pop(len(row)-1) for row in tempLinearNets]
 linearNets = torch.tensor(tempLinearNets, dtype=torch.float)
 linearBiases = torch.tensor(tempLinearBiases, dtype=torch.float)
 
+tolerance = 0.025
+correct = 0
+total = 0
+with torch.no_grad():
+    for n in range (len(linearNets)):
+        output = net(linearNets[n])
+        total += 1
+        if abs(linearBiases[n]-output) <= tolerance:
+            correct += 1
+
+print("Accuracy of the network on before training: %f %%" % (100.0*correct/total))
 
 #Training loop
 print("Beginning Training")
-for epoch in range(50):
+for epoch in range(10):
     running_loss = 0.0
     for n in range (len(linearNets)):
         net.zero_grad()
@@ -94,4 +107,4 @@ with torch.no_grad():
         if abs(linearBiases[n]-output) <= tolerance:
             correct += 1
 
-print("Accuracy of the network on 1,000 test models: %f %%" % (100.0*correct/total))
+print("Accuracy of the network on 5,000 test models: %f %%" % (100.0*correct/total))
