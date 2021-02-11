@@ -4,7 +4,7 @@ import torch.nn.functional as F
 import ramogen
 
 # Parameters
-learning_rate = 0.01
+learning_rate = 0.005
 criterion = nn.MSELoss()
 trainingFile = "slrmodels.csv"
 testingFile = "slrTestModels.csv"
@@ -32,13 +32,13 @@ net = Net()
 # Create new nets for training and testing
 if createNewTrainingModels:
     print("Generating new training models")
-    ramogen.genSLR(100,1000,trainingFile)
+    ramogen.genSLR(100,5000,trainingFile)
     ramogen.testSLR(trainingFile, "communitycrime/crimecommunity.csv", [100, 101], 0)
     print("Finished generating training models")
     
 if createNewTestingModels:
     print("Generating new testing models")
-    ramogen.genSLR(100,1000,testingFile)
+    ramogen.genSLR(100,5000,testingFile)
     ramogen.testSLR(testingFile, "communitycrime/crimecommunity.csv", [100, 101], 0)
     print("Finished generating testing models")
 
@@ -55,7 +55,7 @@ linearBiases = torch.tensor(tempLinearBiases, dtype=torch.float)
 
 #Training loop
 print("Beginning Training")
-for epoch in range(1):
+for epoch in range(50):
     running_loss = 0.0
     for n in range (len(linearNets)):
         net.zero_grad()
@@ -66,9 +66,9 @@ for epoch in range(1):
             f.data.sub_(f.grad.data * learning_rate)
         
         running_loss += loss.item()
-        if n % 10 == 9:    # print every 100 mini-batches
+        if n % 500 == 499:    # print every 500 mini-batches
             print('[%d, %5d] loss: %.3f' %
-                  (epoch + 1, n + 1, running_loss / 10))
+                  (epoch + 1, n + 1, running_loss / 500))
             running_loss = 0.0
 
 print('Finished Training')
@@ -84,7 +84,7 @@ linearNets = torch.tensor(tempLinearNets, dtype=torch.float)
 linearBiases = torch.tensor(tempLinearBiases, dtype=torch.float)
 
 # Testing loop
-tolerance = 0.01
+tolerance = 0.025
 correct = 0
 total = 0
 with torch.no_grad():
