@@ -26,10 +26,44 @@ data.df <- read.csv("testStats.csv")
 head(data)
 ```
 
+
+### Looking over the Models
 To start with, here is a dotplot that shows the intersections between positive results (Crime Predicted) based on having or not having the sensitive attribute (Being a Minority Community).
 
 ```{r}
 with(data.df, plot(PgNS~PgS, ylab= "Positive rate of Non-Sensitive groups", xlab="Positive rate of Sensitive groups"))
+abline(0,1, col="Blue")
 ```
 
+In this graph, each point is a different model. The percentage points were created by running the model over the entire Community Crime dataset and then calculating the rates at which it gave positive responses.
+
+The shape of this graph is certainly worth looking at. It is majorly clustered at the (0,0) and (1,1) points, which I attribute to how the models are generated. Being randomly generated, there is no guarantee that the score they generate for a community will be between 0 and 1, so they are capped there leading to a pileup at the two extremes.
+
+It is also interesting to note that these randomly generated models effectively hit the full breadth of possible biases, with some that can quite accurately discriminate based on the sensitive attribute, despite not having access to it.
+
+The blue line on the graph indicates where models would have a Parity Score (Difference in positive rates) of 0, that is they would be fair by the metric of Parity.
+
+```{r}
+hist(data.df$MeanScore, breaks = 20)
+hist(data.df$Median, breaks = 20)
+```
+
+
+### Ratio
+One legal rule for determining fairness is the so-called 80% rule. Effectively, it says that a system is considered fair if minorities are accepted at at least 80% of the rate of non-minorities. Mathematically, the acceptable rates of minority positives can be bounded as follows:
+
+$0.8 * P(+|Not Minority) \leq P(+|Minority) \leq 1.25 * P(+|Not Minority)$
+
+Here, I take the previous graph and instead put on two lines representing this spread of acceptable values:
+```{r}
+with(data.df, plot(PgNS~PgS, ylab= "Positive rate of Non-Sensitive groups", xlab="Positive rate of Sensitive groups"))
+abline(0,1.25,col="Blue")
+abline(0,0.8, col="Blue")
+```
+
+### Parity
+```{r}
+boxplot(data.df$Parity, horizontal=TRUE)
+hist(data.df$Parity, breaks=20)
+```
 
