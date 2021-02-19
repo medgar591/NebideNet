@@ -1,0 +1,35 @@
+---
+title: "NebideNet Statistics"
+author: "Matt Edgar"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    
+---
+
+## Preliminary Information
+
+Here is where I will put notes and code intended to make sure the rest of this document functions properly.
+```{r}
+getwd()
+```
+
+
+## Randomly Generated Models
+
+One important part of generating models is testing their biases. Here is a set of data based on models generated to work with the Community Crime Dataset.
+
+```{r}
+data.df <- read.csv("testStats.csv")
+head(data)
+```
+
+To start with, here is a dotplot that shows the intersections between positive results (Crime Predicted) based on having or not having the sensitive attribute (Being a Minority Community).
+
+```{r}
+with(data.df, plot(PgNS~PgS, ylab= "Positive rate of Non-Sensitive groups", xlab="Positive rate of Sensitive groups"))
+```
+
+
