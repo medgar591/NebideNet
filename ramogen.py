@@ -37,7 +37,9 @@ def genSLR(coefficients, models, fileName, gauss=True):
 # dataFile is the file containing the data to iterate over
 # ignore is a list naming columns to ignore for various reasons, do not include the sensitive data column here, 0 indexed
 # sensitive is the column containing the sensitive data, 0 indexed and assumed to be binary
-def testSLR(modelFile, dataFile, ignore: list, sensitive):
+# fmodel is what fairness model to use, 0 for Parity, 1 is for ratio
+# Binarize does what it says and binarizes the results
+def testSLR(modelFile, dataFile, ignore: list, sensitive, fmodel = 0, binarize = False):
     files = open(modelFile, "rt")
     models = [item.split(",") for item in files.read().splitlines()]
     files.close()
@@ -98,8 +100,25 @@ def testSLR(modelFile, dataFile, ignore: list, sensitive):
         else: # TODO: Consider the problem of a extremely small acceptance rate that achieved 0 for minorities
             parity = (stt/st) / (sft/sf) #Parity ratio = P(score+ | sensitive+) / P(score+ | sensitive-)
         """
-        parity = (stt/st) - (sft/sf)
-        models[b].append(parity)
+        if (fmodel == 0):
+            parity = (stt/st) - (sft/sf)
+            if binarize:
+                models[b].append(int(abs(parity) < 0.05))
+            else:
+                models[b].append(parity)
+        elif (fmodel == 1):
+            if sft == 0 and stt == 0:
+                parity = 1
+            elif sft == 0 or stt == 0:
+                parity = -1
+            else:
+                parity = (stt/st) / (sft/sf) #Parity ratio = P(score+ | sensitive+) / P(score+ | sensitive-)
+
+            if binarize:
+                models[b].append( int((parity <= 1.25) and (parity >= 0.8)) )
+            else:
+                models[b].append(parity)
+
     
     #Writing models + their parity scores back to the file
     for item in range(len(models)):
@@ -208,5 +227,5 @@ def statSLR(modelFile, dataFile, outputFile, ignore: list, sensitive, header=Tru
 # genSLR(100,1000,"slrmodels.csv") #Generates 1,000 sample models to test on the communitycrime dataset
 # testSLR("slrmodels.csv", "communitycrime/crimecommunity.csv", [100, 101], 0)
 
-genSLR(100, 1000, "testStats.csv")
-statSLR("testStats.csv", "communitycrime/crimecommunity.csv", "testStats.csv", [100, 101], 0)
+#genSLR(100, 1000, "testStats.csv")
+#statSLR("testStats.csv", "communitycrime/crimecommunity.csv", "testStats.csv", [100, 101], 0)
