@@ -22,17 +22,80 @@ getwd()
 One important part of generating models is testing their biases. Here is a set of data based on models generated to work with the Community Crime Dataset.
 
 ```{r}
-data.gauss <- read.csv("gaussStats.csv")
-head(data)
+data.gss <- read.csv("gaussStats.csv", header = TRUE)
+head(data.gss)
+data.uni <- read.csv("uniformStats.csv", header = TRUE)
+head(data.uni)
+data.rni <- read.csv("reducedUniformStats.csv", header = TRUE)
+head(data.rni)
 ```
+
+
+## Graphs with No Context
+
+```{r}
+with(data.gss, plot(PgNS~PgS, ylab = "Positive Rate of Non-Sensitive Groups", xlab = "Positive rate of Sensitive Groups", main = "Gaussian Models"))
+abline(0, 1, col = "Blue")
+with(data.uni, plot(PgNS~PgS, ylab = "Positive Rate of Non-Sensitive Groups", xlab = "Positive rate of Sensitive Groups", main = "Uniform Models"))
+abline(0, 1, col = "Blue")
+with(data.rni, plot(PgNS~PgS, ylab = "Positive Rate of Non-Sensitive Groups", xlab = "Positive rate of Sensitive Groups", main = "Reduced Uniform Models"))
+abline(0, 1, col = "Blue")
+
+hist(data.gss$MeanScore, breaks = 20)
+hist(data.uni$MeanScore, breaks = 20)
+hist(data.rni$MeanScore, breaks = 20)
+
+hist(data.gss$Median, breaks = 20)
+hist(data.uni$Median, breaks = 20)
+hist(data.rni$Median, breaks = 20)
+```
+
+## Work on Filtering the Data
+
+Filtering by Median
+```{r}
+data.gss.fd = data.gss[data.gss$Median < 1 & data.gss$Median > 0,]
+length(data.gss.fd$PgS)
+data.uni.fd = data.uni[data.uni$Median < 1 & data.uni$Median > 0,]
+length(data.uni.fd$PgS)
+data.rni.fd = data.rni[data.rni$Median < 1 & data.rni$Median > 0,]
+length(data.rni.fd$PgS)
+
+with(data.gss.fd, plot(PgNS~PgS, ylab = "Positive Rate of Non-Sensitive Groups", xlab = "Positive rate of Sensitive Groups", main = "Gaussian Models Filtered by Median", ylim = c(0,1), xlim = c(0,1)))
+abline(0, 1, col = "Blue")
+with(data.uni.fd, plot(PgNS~PgS, ylab = "Positive Rate of Non-Sensitive Groups", xlab = "Positive rate of Sensitive Groups", main = "Uniform Models Filtered by Median", ylim = c(0,1), xlim = c(0,1)))
+abline(0, 1, col = "Blue")
+with(data.rni.fd, plot(PgNS~PgS, ylab = "Positive Rate of Non-Sensitive Groups", xlab = "Positive rate of Sensitive Groups", main = "Reduced Uniform Models Filtered by Median", ylim = c(0,1), xlim = c(0,1)))
+abline(0, 1, col = "Blue")
+```
+
+Filtering by Mean
+```{r}
+data.gss.fn = data.gss[data.gss$MeanScore < 0.95 & data.gss$MeanScore > 0.05,]
+length(data.gss.fn$PgS)
+data.uni.fn = data.uni[data.uni$MeanScore < 0.95 & data.uni$MeanScore > 0.05,]
+length(data.uni.fn$PgS)
+data.rni.fn = data.rni[data.rni$MeanScore < 0.95 & data.rni$MeanScore > 0.05,]
+length(data.rni.fn$PgS)
+
+with(data.gss.fn, plot(PgNS~PgS, ylab = "Positive Rate of Non-Sensitive Groups", xlab = "Positive rate of Sensitive Groups", main = "Gaussian Models Filtered by Mean", ylim = c(0,1), xlim = c(0,1)))
+abline(0, 1, col = "Blue")
+with(data.uni.fn, plot(PgNS~PgS, ylab = "Positive Rate of Non-Sensitive Groups", xlab = "Positive rate of Sensitive Groups", main = "Uniform Models Filtered by Mean", ylim = c(0,1), xlim = c(0,1)))
+abline(0, 1, col = "Blue")
+with(data.rni.fn, plot(PgNS~PgS, ylab = "Positive Rate of Non-Sensitive Groups", xlab = "Positive rate of Sensitive Groups", main = "Reduced Uniform Models Filtered by Mean", ylim = c(0,1), xlim = c(0,1)))
+abline(0, 1, col = "Blue")
+```
+
+
+
 
 
 ### Looking over the Models
 To start with, here is a dotplot that shows the intersections between positive results (Crime Predicted) based on having or not having the sensitive attribute (Being a Minority Community).
 
 ```{r}
-with(data.df, plot(PgNS~PgS, ylab= "Positive rate of Non-Sensitive groups", xlab="Positive rate of Sensitive groups"))
-abline(0,1, col="Blue")
+#with(data.df, plot(PgNS~PgS, ylab= "Positive rate of Non-Sensitive groups", xlab="Positive rate of Sensitive groups"))
+#abline(0,1, col="Blue")
 ```
 
 In this graph, each point is a different model. The percentage points were created by running the model over the entire Community Crime dataset and then calculating the rates at which it gave positive responses.
@@ -44,8 +107,8 @@ It is also interesting to note that these randomly generated models effectively 
 The blue line on the graph indicates where models would have a Parity Score (Difference in positive rates) of 0, that is they would be fair by the metric of Parity.
 
 ```{r}
-hist(data.df$MeanScore, breaks = 20)
-hist(data.df$Median, breaks = 20)
+#hist(data.df$MeanScore, breaks = 20)
+#hist(data.df$Median, breaks = 20)
 ```
 
 
@@ -56,14 +119,14 @@ $0.8 * P(+|Not Minority) \leq P(+|Minority) \leq 1.25 * P(+|Not Minority)$
 
 Here, I take the previous graph and instead put on two lines representing this spread of acceptable values:
 ```{r}
-with(data.df, plot(PgNS~PgS, ylab= "Positive rate of Non-Sensitive groups", xlab="Positive rate of Sensitive groups"))
-abline(0,1.25,col="Blue")
-abline(0,0.8, col="Blue")
+#with(data.df, plot(PgNS~PgS, ylab= "Positive rate of Non-Sensitive groups", xlab="Positive rate of Sensitive groups"))
+#abline(0,1.25,col="Blue")
+#abline(0,0.8, col="Blue")
 ```
 
 ### Parity
 ```{r}
-boxplot(data.df$Parity, horizontal=TRUE)
-hist(data.df$Parity, breaks=20)
+#boxplot(data.df$Parity, horizontal=TRUE)
+#hist(data.df$Parity, breaks=20)
 ```
 
