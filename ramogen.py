@@ -227,5 +227,7 @@ def statSLR(modelFile, dataFile, outputFile, ignore: list, sensitive, header=Tru
 # genSLR(100,1000,"slrmodels.csv") #Generates 1,000 sample models to test on the communitycrime dataset
 # testSLR("slrmodels.csv", "communitycrime/crimecommunity.csv", [100, 101], 0)
 
-#genSLR(100, 1000, "testStats.csv")
-#statSLR("testStats.csv", "communitycrime/crimecommunity.csv", "testStats.csv", [100, 101], 0)
+# genSLR(100, 1000, "gaussStats.csv", gauss=True)
+# statSLR("gaussStats.csv", "communitycrime/crimecommunity.csv", "gaussStats.csv", [100, 101], 0, header=True)
+# genSLR(100, 1000, "uniformStats.csv", gauss=False)
+# statSLR("uniformStats.csv", "communitycrime/crimecommunity.csv", "uniformStats.csv", [100, 101], 0, header=True)
