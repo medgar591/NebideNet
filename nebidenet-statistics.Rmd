@@ -86,7 +86,43 @@ with(data.rni.fn, plot(PgNS~PgS, ylab = "Positive Rate of Non-Sensitive Groups",
 abline(0, 1, col = "Blue")
 ```
 
+## More No Context Graphs
 
+Boxplots of Parity, grouped by filtering
+```{r}
+boxplot(data.gss$Parity, horizontal=TRUE, ylim = c(-1,1))
+boxplot(data.uni$Parity, horizontal=TRUE, ylim = c(-1,1))
+boxplot(data.rni$Parity, horizontal=TRUE, ylim = c(-1,1))
+
+boxplot(data.gss.fd$Parity, horizontal = TRUE, ylim = c(-1,1))
+boxplot(data.uni.fd$Parity, horizontal=TRUE, ylim = c(-1,1))
+boxplot(data.rni.fd$Parity, horizontal=TRUE, ylim = c(-1,1))
+
+boxplot(data.gss.fn$Parity, horizontal = TRUE, ylim = c(-1,1))
+boxplot(data.uni.fn$Parity, horizontal=TRUE, ylim = c(-1,1))
+boxplot(data.rni.fn$Parity, horizontal=TRUE, ylim = c(-1,1))
+```
+
+Histograms of Parity, grouped by filtering
+```{r}
+hist(data.gss$Parity, xlim = c(-1,1), ylim = c(0,400))
+hist(data.uni$Parity, xlim = c(-1,1), ylim = c(0,400))
+hist(data.rni$Parity, xlim = c(-1,1), ylim = c(0,400))
+
+hist(data.gss.fd$Parity, xlim = c(-1,1), ylim = c(0,400))
+hist(data.uni.fd$Parity, xlim = c(-1,1), ylim = c(0,400))
+hist(data.rni.fd$Parity, xlim = c(-1,1), ylim = c(0,400))
+
+hist(data.gss.fn$Parity, xlim = c(-1,1), ylim = c(0,400))
+hist(data.uni.fn$Parity, xlim = c(-1,1), ylim = c(0,400))
+hist(data.rni.fn$Parity, xlim = c(-1,1), ylim = c(0,400))
+```
+
+```{r}
+hist(data.gss[data.gss$Ratio != -1,]$Ratio, breaks = 20)
+hist(data.uni[data.uni$Ratio != -1,]$Ratio, breaks = 20)
+hist(data.rni[data.rni$Ratio != -1,]$Ratio, breaks = 20)
+```
 
 
 
