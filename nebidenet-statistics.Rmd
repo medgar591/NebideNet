@@ -22,7 +22,7 @@ getwd()
 One important part of generating models is testing their biases. Here is a set of data based on models generated to work with the Community Crime Dataset.
 
 ```{r}
-data.df <- read.csv("testStats.csv")
+data.gauss <- read.csv("gaussStats.csv")
 head(data)
 ```
 
